@@ -37,13 +37,17 @@ function ArrayFieldDescription({ DescriptionField, idSchema, description }) {
 }
 
 // Used in the two templates
-function DefaultArrayItem(props) {
+function DefaultArrayItem(props, items) {
+  const hasNested = items.type === "array";
+
   return (
     <Grid.Row columns="equal">
-      <Grid.Column>{props.children}</Grid.Column>
+      <Grid.Column streched verticalAlign="middle">
+        {props.children}
+      </Grid.Column>
 
       {props.hasToolbar && (
-        <Grid.Column width={3}>
+        <Grid.Column width={3} verticalAlign={hasNested ? "top" : "middle"}>
           <Button.Group fluid grouped>
             {(props.hasMoveUp || props.hasMoveDown) && (
               <Button
@@ -83,7 +87,7 @@ function DefaultArrayItem(props) {
 
 function DefaultFixedArrayFieldTemplate(props) {
   return (
-    <div>
+    <Form.Field>
       <ArrayFieldTitle
         key={`array-field-title-${props.idSchema.$id}`}
         TitleField={props.TitleField}
@@ -99,7 +103,8 @@ function DefaultFixedArrayFieldTemplate(props) {
       )}
 
       <Grid stackable key={`array-item-list-${props.idSchema.$id}`}>
-        {props.items && props.items.map(DefaultArrayItem)}
+        {props.items &&
+          props.items.map(item => DefaultArrayItem(item, props.schema.items))}
       </Grid>
 
       {props.canAdd && (
@@ -108,7 +113,7 @@ function DefaultFixedArrayFieldTemplate(props) {
           disabled={props.disabled || props.readonly}
         />
       )}
-    </div>
+    </Form.Field>
   );
 }
 
@@ -135,7 +140,8 @@ function DefaultNormalArrayFieldTemplate(props) {
       )}
 
       <Grid stackable key={`array-item-list-${props.idSchema.$id}`}>
-        {props.items && props.items.map(p => DefaultArrayItem(p))}
+        {props.items &&
+          props.items.map(item => DefaultArrayItem(item, props.schema.items))}
         {props.canAdd && (
           <AddButton
             onClick={props.onAddClick}
@@ -629,7 +635,7 @@ class ArrayField extends Component {
 function AddButton({ onClick, disabled }) {
   return (
     <Grid.Row>
-      <Grid.Column width={3} floated="right">
+      <Grid.Column width={3} verticalAlign="middle" floated="right">
         <Button
           primary
           fluid

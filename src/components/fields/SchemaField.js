@@ -55,10 +55,12 @@ function Label(props) {
     return <div />;
   }
   return (
-    <Header as="label" className="control-label" htmlFor={id}>
-      {label}
-      {required && <span className="required">{REQUIRED_FIELD_SYMBOL}</span>}
-    </Header>
+    <div>
+      <Header subheader as="h5" className="control-label" htmlFor={id}>
+        {label}
+        {required && <span className="required">{REQUIRED_FIELD_SYMBOL}</span>}
+      </Header>
+    </div>
   );
 }
 
@@ -108,8 +110,9 @@ function DefaultTemplate(props) {
   }
 
   return (
-    <Form.Group className={"foooo " + classNames}>
-      {displayLabel && <Label label={label} required={required} id={id} />}
+    <Form.Group grouped className={classNames}>
+      {displayLabel &&
+        children.length && <Label label={label} required={required} id={id} />}
       {displayLabel && description ? description : null}
       {children}
       {errors}
