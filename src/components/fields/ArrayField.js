@@ -44,13 +44,7 @@ function DefaultArrayItem(props) {
 
       {props.hasToolbar && (
         <Grid.Column width={3}>
-          <Button.Group
-            grouped
-            className="btn-group"
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-            }}>
+          <Button.Group fluid grouped>
             {(props.hasMoveUp || props.hasMoveDown) && (
               <Button
                 icon="arrow up"

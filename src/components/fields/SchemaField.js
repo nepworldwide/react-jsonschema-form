@@ -13,6 +13,7 @@ import {
   getSchemaType,
 } from "../../utils";
 import UnsupportedField from "./UnsupportedField";
+import { Form, Header, Message } from "semantic-ui-react";
 
 const REQUIRED_FIELD_SYMBOL = "*";
 const COMPONENT_TYPES = {
@@ -54,10 +55,10 @@ function Label(props) {
     return <div />;
   }
   return (
-    <label className="control-label" htmlFor={id}>
+    <Header as="label" className="control-label" htmlFor={id}>
       {label}
       {required && <span className="required">{REQUIRED_FIELD_SYMBOL}</span>}
-    </label>
+    </Header>
   );
 }
 
@@ -79,18 +80,13 @@ function ErrorList(props) {
     return <div />;
   }
   return (
-    <div>
-      <p />
-      <ul className="error-detail bs-callout bs-callout-info">
+    <Message error>
+      <Message.List className="error-detail bs-callout bs-callout-info">
         {errors.map((error, index) => {
-          return (
-            <li className="text-danger" key={index}>
-              {error}
-            </li>
-          );
+          return <Message.Item key={index}>{error}</Message.Item>;
         })}
-      </ul>
-    </div>
+      </Message.List>
+    </Message>
   );
 }
 
@@ -112,13 +108,13 @@ function DefaultTemplate(props) {
   }
 
   return (
-    <div className={classNames}>
+    <Form.Group className={"foooo " + classNames}>
       {displayLabel && <Label label={label} required={required} id={id} />}
       {displayLabel && description ? description : null}
       {children}
       {errors}
       {help}
-    </div>
+    </Form.Group>
   );
 }
 

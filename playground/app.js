@@ -17,6 +17,7 @@ import "codemirror/theme/ttcn.css";
 import "codemirror/theme/solarized.css";
 import "codemirror/theme/monokai.css";
 import "codemirror/theme/eclipse.css";
+import { Container } from "semantic-ui-react";
 
 const log = type => console.log.bind(console, type);
 const fromJson = json => JSON.parse(json);
@@ -457,41 +458,43 @@ class App extends Component {
         </div>
         <div className="col-sm-5">
           {this.state.form && (
-            <Form
-              ArrayFieldTemplate={ArrayFieldTemplate}
-              ObjectFieldTemplate={ObjectFieldTemplate}
-              liveValidate={liveValidate}
-              schema={schema}
-              uiSchema={uiSchema}
-              formData={formData}
-              onChange={this.onFormDataChange}
-              onSubmit={({ formData }) =>
-                console.log("submitted formData", formData)
-              }
-              fields={{ geo: GeoPosition }}
-              validate={validate}
-              onBlur={(id, value) =>
-                console.log(`Touched ${id} with value ${value}`)
-              }
-              onFocus={(id, value) =>
-                console.log(`Focused ${id} with value ${value}`)
-              }
-              transformErrors={transformErrors}
-              onError={log("errors")}>
-              <div className="row">
-                <div className="col-sm-3">
-                  <button className="btn btn-primary" type="submit">
-                    Submit
-                  </button>
+            <Container>
+              <Form
+                ArrayFieldTemplate={ArrayFieldTemplate}
+                ObjectFieldTemplate={ObjectFieldTemplate}
+                liveValidate={liveValidate}
+                schema={schema}
+                uiSchema={uiSchema}
+                formData={formData}
+                onChange={this.onFormDataChange}
+                onSubmit={({ formData }) =>
+                  console.log("submitted formData", formData)
+                }
+                fields={{ geo: GeoPosition }}
+                validate={validate}
+                onBlur={(id, value) =>
+                  console.log(`Touched ${id} with value ${value}`)
+                }
+                onFocus={(id, value) =>
+                  console.log(`Focused ${id} with value ${value}`)
+                }
+                transformErrors={transformErrors}
+                onError={log("errors")}>
+                <div className="row">
+                  <div className="col-sm-3">
+                    <button className="btn btn-primary" type="submit">
+                      Submit
+                    </button>
+                  </div>
+                  <div className="col-sm-9 text-right">
+                    <CopyLink
+                      shareURL={this.state.shareURL}
+                      onShare={this.onShare}
+                    />
+                  </div>
                 </div>
-                <div className="col-sm-9 text-right">
-                  <CopyLink
-                    shareURL={this.state.shareURL}
-                    onShare={this.onShare}
-                  />
-                </div>
-              </div>
-            </Form>
+              </Form>
+            </Container>
           )}
         </div>
       </div>

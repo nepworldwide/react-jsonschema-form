@@ -6,11 +6,12 @@ import {
   retrieveSchema,
   getDefaultRegistry,
 } from "../../utils";
+import { Form, Message } from "semantic-ui-react";
 
 function DefaultObjectFieldTemplate(props) {
   const { TitleField, DescriptionField } = props;
   return (
-    <fieldset>
+    <Form.Field>
       {(props.uiSchema["ui:title"] || props.title) && (
         <TitleField
           id={`${props.idSchema.$id}__title`}
@@ -27,7 +28,7 @@ function DefaultObjectFieldTemplate(props) {
         />
       )}
       {props.properties.map(prop => prop.content)}
-    </fieldset>
+    </Form.Field>
   );
 }
 
@@ -90,13 +91,13 @@ class ObjectField extends Component {
       orderedProperties = orderProperties(properties, uiSchema["ui:order"]);
     } catch (err) {
       return (
-        <div>
-          <p className="config-error" style={{ color: "red" }}>
+        <Message error>
+          <p>
             Invalid {name || "root"} object field configuration:
             <em>{err.message}</em>.
           </p>
           <pre>{JSON.stringify(schema)}</pre>
-        </div>
+        </Message>
       );
     }
 

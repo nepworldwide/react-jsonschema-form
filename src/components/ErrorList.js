@@ -4,7 +4,7 @@ import { Message } from "semantic-ui-react";
 export default function ErrorList(props) {
   const { errors } = props;
   return (
-    <Message>
+    <Message error>
       <Message.Header>Errors</Message.Header>
       <Message.List>
         {errors.map((error, i) => {
