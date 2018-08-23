@@ -12,6 +12,8 @@ import {
 } from "../utils";
 import validateFormData, { toErrorList } from "../validate";
 
+import { Button, Form as SemanticForm } from "semantic-ui-react";
+
 export default class Form extends Component {
   static defaultProps = {
     uiSchema: {},
@@ -193,7 +195,7 @@ export default class Form extends Component {
     const _SchemaField = registry.fields.SchemaField;
 
     return (
-      <form
+      <SemanticForm
         className={className ? className : "rjsf"}
         id={id}
         name={name}
@@ -222,13 +224,11 @@ export default class Form extends Component {
         {children ? (
           children
         ) : (
-          <p>
-            <button type="submit" className="btn btn-info">
-              Submit
-            </button>
-          </p>
+          <Button type="submit" primary>
+            Submit
+          </Button>
         )}
-      </form>
+      </SemanticForm>
     );
   }
 }

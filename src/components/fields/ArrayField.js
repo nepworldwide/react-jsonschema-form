@@ -4,18 +4,19 @@ import includes from "core-js/library/fn/array/includes";
 
 import UnsupportedField from "./UnsupportedField";
 import {
-  getWidget,
+  allowAdditionalItems,
   getDefaultFormState,
+  getDefaultRegistry,
   getUiOptions,
-  isMultiSelect,
+  getWidget,
   isFilesArray,
   isFixedItems,
-  allowAdditionalItems,
+  isMultiSelect,
   optionsList,
   retrieveSchema,
   toIdSchema,
-  getDefaultRegistry,
 } from "../../utils";
+import { Button, Form, Grid, Message } from "semantic-ui-react";
 
 function ArrayFieldTitle({ TitleField, idSchema, title, required }) {
   if (!title) {
@@ -35,57 +36,34 @@ function ArrayFieldDescription({ DescriptionField, idSchema, description }) {
   return <DescriptionField id={id} description={description} />;
 }
 
-function IconBtn(props) {
-  const { type = "default", icon, className, ...otherProps } = props;
-  return (
-    <button
-      type="button"
-      className={`btn btn-${type} ${className}`}
-      {...otherProps}>
-      <i className={`glyphicon glyphicon-${icon}`} />
-    </button>
-  );
-}
-
 // Used in the two templates
 function DefaultArrayItem(props) {
-  const btnStyle = {
-    flex: 1,
-    paddingLeft: 6,
-    paddingRight: 6,
-    fontWeight: "bold",
-  };
   return (
-    <div key={props.index} className={props.className}>
-      <div className={props.hasToolbar ? "col-xs-9" : "col-xs-12"}>
-        {props.children}
-      </div>
+    <Grid.Row columns="equal">
+      <Grid.Column>{props.children}</Grid.Column>
 
       {props.hasToolbar && (
-        <div className="col-xs-3 array-item-toolbox">
-          <div
+        <Grid.Column width={3}>
+          <Button.Group
+            grouped
             className="btn-group"
             style={{
               display: "flex",
               justifyContent: "space-around",
             }}>
             {(props.hasMoveUp || props.hasMoveDown) && (
-              <IconBtn
-                icon="arrow-up"
-                className="array-item-move-up"
+              <Button
+                icon="arrow up"
                 tabIndex="-1"
-                style={btnStyle}
                 disabled={props.disabled || props.readonly || !props.hasMoveUp}
                 onClick={props.onReorderClick(props.index, props.index - 1)}
               />
             )}
 
             {(props.hasMoveUp || props.hasMoveDown) && (
-              <IconBtn
-                icon="arrow-down"
-                className="array-item-move-down"
+              <Button
+                icon="arrow down"
                 tabIndex="-1"
-                style={btnStyle}
                 disabled={
                   props.disabled || props.readonly || !props.hasMoveDown
                 }
@@ -94,26 +72,24 @@ function DefaultArrayItem(props) {
             )}
 
             {props.hasRemove && (
-              <IconBtn
-                type="danger"
+              <Button
+                color="red"
                 icon="remove"
-                className="array-item-remove"
                 tabIndex="-1"
-                style={btnStyle}
                 disabled={props.disabled || props.readonly}
                 onClick={props.onDropIndexClick(props.index)}
               />
             )}
-          </div>
-        </div>
+          </Button.Group>
+        </Grid.Column>
       )}
-    </div>
+    </Grid.Row>
   );
 }
 
 function DefaultFixedArrayFieldTemplate(props) {
   return (
-    <fieldset className={props.className}>
+    <div>
       <ArrayFieldTitle
         key={`array-field-title-${props.idSchema.$id}`}
         TitleField={props.TitleField}
@@ -123,18 +99,14 @@ function DefaultFixedArrayFieldTemplate(props) {
       />
 
       {(props.uiSchema["ui:description"] || props.schema.description) && (
-        <div
-          className="field-description"
-          key={`field-description-${props.idSchema.$id}`}>
-          {props.uiSchema["ui:description"] || props.schema.description}
-        </div>
+        <Message info key={`field-description-${props.idSchema.$id}`}>
+          <p>{props.uiSchema["ui:description"] || props.schema.description}</p>
+        </Message>
       )}
 
-      <div
-        className="row array-item-list"
-        key={`array-item-list-${props.idSchema.$id}`}>
+      <Grid stackable key={`array-item-list-${props.idSchema.$id}`}>
         {props.items && props.items.map(DefaultArrayItem)}
-      </div>
+      </Grid>
 
       {props.canAdd && (
         <AddButton
@@ -142,13 +114,13 @@ function DefaultFixedArrayFieldTemplate(props) {
           disabled={props.disabled || props.readonly}
         />
       )}
-    </fieldset>
+    </div>
   );
 }
 
 function DefaultNormalArrayFieldTemplate(props) {
   return (
-    <fieldset className={props.className}>
+    <Form.Field className={props.className}>
       <ArrayFieldTitle
         key={`array-field-title-${props.idSchema.$id}`}
         TitleField={props.TitleField}
@@ -168,19 +140,16 @@ function DefaultNormalArrayFieldTemplate(props) {
         />
       )}
 
-      <div
-        className="row array-item-list"
-        key={`array-item-list-${props.idSchema.$id}`}>
+      <Grid stackable key={`array-item-list-${props.idSchema.$id}`}>
         {props.items && props.items.map(p => DefaultArrayItem(p))}
-      </div>
-
-      {props.canAdd && (
-        <AddButton
-          onClick={props.onAddClick}
-          disabled={props.disabled || props.readonly}
-        />
-      )}
-    </fieldset>
+        {props.canAdd && (
+          <AddButton
+            onClick={props.onAddClick}
+            disabled={props.disabled || props.readonly}
+          />
+        )}
+      </Grid>
+    </Form.Field>
   );
 }
 
@@ -194,37 +163,6 @@ class ArrayField extends Component {
     readonly: false,
     autofocus: false,
   };
-
-  get itemTitle() {
-    const { schema } = this.props;
-    return schema.items.title || schema.items.description || "Item";
-  }
-
-  isItemRequired(itemSchema) {
-    if (Array.isArray(itemSchema.type)) {
-      // While we don't yet support composite/nullable jsonschema types, it's
-      // future-proof to check for requirement against these.
-      return !includes(itemSchema.type, "null");
-    }
-    // All non-null array item types are inherently required by design
-    return itemSchema.type !== "null";
-  }
-
-  canAddItem(formItems) {
-    const { schema, uiSchema } = this.props;
-    let { addable } = getUiOptions(uiSchema);
-    if (addable !== false) {
-      // if ui:options.addable was not explicitly set to false, we can add
-      // another item if we have not exceeded maxItems yet
-      if (schema.maxItems !== undefined) {
-        addable = formItems.length < schema.maxItems;
-      } else {
-        addable = true;
-      }
-    }
-    return addable;
-  }
-
   onAddClick = event => {
     event.preventDefault();
     const { schema, formData, registry = getDefaultRegistry() } = this.props;
@@ -238,7 +176,6 @@ class ArrayField extends Component {
       getDefaultFormState(itemSchema, undefined, definitions),
     ]);
   };
-
   onDropIndexClick = index => {
     return event => {
       if (event) {
@@ -262,7 +199,6 @@ class ArrayField extends Component {
       onChange(formData.filter((_, i) => i !== index), newErrorSchema);
     };
   };
-
   onReorderClick = (index, newIndex) => {
     return event => {
       if (event) {
@@ -300,7 +236,6 @@ class ArrayField extends Component {
       );
     };
   };
-
   onChangeForIndex = index => {
     return (value, errorSchema) => {
       const { formData, onChange } = this.props;
@@ -320,10 +255,39 @@ class ArrayField extends Component {
       );
     };
   };
-
   onSelectChange = value => {
     this.props.onChange(value);
   };
+
+  get itemTitle() {
+    const { schema } = this.props;
+    return schema.items.title || schema.items.description || "Item";
+  }
+
+  isItemRequired(itemSchema) {
+    if (Array.isArray(itemSchema.type)) {
+      // While we don't yet support composite/nullable jsonschema types, it's
+      // future-proof to check for requirement against these.
+      return !includes(itemSchema.type, "null");
+    }
+    // All non-null array item types are inherently required by design
+    return itemSchema.type !== "null";
+  }
+
+  canAddItem(formItems) {
+    const { schema, uiSchema } = this.props;
+    let { addable } = getUiOptions(uiSchema);
+    if (addable !== false) {
+      // if ui:options.addable was not explicitly set to false, we can add
+      // another item if we have not exceeded maxItems yet
+      if (schema.maxItems !== undefined) {
+        addable = formItems.length < schema.maxItems;
+      } else {
+        addable = true;
+      }
+    }
+    return addable;
+  }
 
   render() {
     const {
@@ -543,7 +507,7 @@ class ArrayField extends Component {
     // These are the props passed into the render function
     const arrayProps = {
       canAdd: this.canAddItem(items) && additionalSchema,
-      className: "field field-array field-array-fixed-items",
+      // className: "field field-array field-array-fixed-items",
       disabled,
       idSchema,
       formData,
@@ -670,18 +634,18 @@ class ArrayField extends Component {
 
 function AddButton({ onClick, disabled }) {
   return (
-    <div className="row">
-      <p className="col-xs-3 col-xs-offset-9 array-item-add text-right">
-        <IconBtn
-          type="info"
+    <Grid.Row>
+      <Grid.Column width={3} floated="right">
+        <Button
+          primary
+          fluid
           icon="plus"
-          className="btn-add col-xs-12"
           tabIndex="0"
           onClick={onClick}
           disabled={disabled}
         />
-      </p>
-    </div>
+      </Grid.Column>
+    </Grid.Row>
   );
 }
 

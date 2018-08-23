@@ -23,7 +23,7 @@ const fromJson = json => JSON.parse(json);
 const toJson = val => JSON.stringify(val, null, 2);
 const liveValidateSchema = { type: "boolean", title: "Live validation" };
 const cmOptions = {
-  theme: "default",
+  theme: "none",
   height: "auto",
   viewportMargin: Infinity,
   mode: {
@@ -37,6 +37,9 @@ const cmOptions = {
   tabSize: 2,
 };
 const themes = {
+  none: {
+    stylesheet: "",
+  },
   default: {
     stylesheet:
       "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css",
