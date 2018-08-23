@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import { asNumber } from "../../utils";
+import { Dropdown } from "semantic-ui-react";
 
 const nums = new Set(["number", "integer"]);
 
@@ -22,17 +23,6 @@ function processValue({ type, items }, value) {
   return value;
 }
 
-function getValue(event, multiple) {
-  if (multiple) {
-    return [].slice
-      .call(event.target.options)
-      .filter(o => o.selected)
-      .map(o => o.value);
-  } else {
-    return event.target.value;
-  }
-}
-
 function SelectWidget(props) {
   const {
     schema,
@@ -51,43 +41,47 @@ function SelectWidget(props) {
   } = props;
   const { enumOptions, enumDisabled } = options;
   const emptyValue = multiple ? [] : "";
+
+  const parsedOptions = enumOptions.map(({ value, label }, i) => {
+    const disabled = enumDisabled && enumDisabled.indexOf(value) != -1;
+    return {
+      value,
+      disabled,
+      text: label,
+    };
+  });
+
   return (
-    <select
+    <Dropdown
+      selection
+      placeholder={placeholder}
+      options={parsedOptions}
       id={id}
       multiple={multiple}
-      className="form-control"
       value={typeof value === "undefined" ? emptyValue : value}
       required={required}
       disabled={disabled || readonly}
       autoFocus={autofocus}
       onBlur={
         onBlur &&
-        (event => {
-          const newValue = getValue(event, multiple);
+        ((event, data) => {
+          const newValue = data.value;
           onBlur(id, processValue(schema, newValue));
         })
       }
       onFocus={
         onFocus &&
-        (event => {
-          const newValue = getValue(event, multiple);
+        ((event, data) => {
+          const newValue = data.value;
           onFocus(id, processValue(schema, newValue));
         })
       }
-      onChange={event => {
-        const newValue = getValue(event, multiple);
+      onChange={(event, data) => {
+        console.log(data);
+        const newValue = data.value;
         onChange(processValue(schema, newValue));
-      }}>
-      {!multiple && !schema.default && <option value="">{placeholder}</option>}
-      {enumOptions.map(({ value, label }, i) => {
-        const disabled = enumDisabled && enumDisabled.indexOf(value) != -1;
-        return (
-          <option key={i} value={value} disabled={disabled}>
-            {label}
-          </option>
-        );
-      })}
-    </select>
+      }}
+    />
   );
 }
 

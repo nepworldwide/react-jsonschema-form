@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import DescriptionField from "../fields/DescriptionField.js";
+import { Form } from "semantic-ui-react";
 
 function CheckboxWidget(props) {
   const {
@@ -19,18 +20,16 @@ function CheckboxWidget(props) {
       {schema.description && (
         <DescriptionField description={schema.description} />
       )}
-      <label>
-        <input
-          type="checkbox"
-          id={id}
-          checked={typeof value === "undefined" ? false : value}
-          required={required}
-          disabled={disabled || readonly}
-          autoFocus={autofocus}
-          onChange={event => onChange(event.target.checked)}
-        />
-        <span>{label}</span>
-      </label>
+      <Form.Checkbox
+        label={label}
+        type="checkbox"
+        id={id}
+        checked={typeof value === "undefined" ? false : value}
+        required={required}
+        disabled={disabled || readonly}
+        autoFocus={autofocus}
+        onChange={event => onChange(event.target.checked)}
+      />
     </div>
   );
 }

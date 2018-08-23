@@ -14,6 +14,7 @@ import {
 } from "../../utils";
 import UnsupportedField from "./UnsupportedField";
 import { Form, Header, Message } from "semantic-ui-react";
+import StringField from "./StringField";
 
 const REQUIRED_FIELD_SYMBOL = "*";
 const COMPONENT_TYPES = {
@@ -112,7 +113,9 @@ function DefaultTemplate(props) {
   return (
     <Form.Group grouped className={classNames}>
       {displayLabel &&
-        children.length && <Label label={label} required={required} id={id} />}
+        children.type !== StringField && (
+          <Label label={label} required={required} id={id} />
+        )}
       {displayLabel && description ? description : null}
       {children}
       {errors}
