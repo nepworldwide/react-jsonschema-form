@@ -21,6 +21,7 @@ function BaseInput(props) {
     formContext,
     registry,
     rawErrors,
+    label,
     ...inputProps
   } = props;
 
@@ -35,6 +36,7 @@ function BaseInput(props) {
       disabled={disabled}
       autoFocus={autofocus}
       value={value == null ? "" : value}
+      label={!!label && label}
       {...inputProps}
       onChange={_onChange}
       onBlur={onBlur && (event => onBlur(inputProps.id, event.target.value))}
