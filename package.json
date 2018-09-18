@@ -1,6 +1,6 @@
 {
   "name": "react-jsonschema-form-semantic",
-  "version": "0.9.8",
+  "version": "0.9.10",
   "description": "A simple React component capable of building HTML forms out of a JSON schema. Uses React Semantic UI (css not bundled)",
   "scripts": {
     "build:readme": "toctoc README.md -w",
