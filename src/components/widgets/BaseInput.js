@@ -32,13 +32,14 @@ function BaseInput(props) {
 
   const stringTypes = ["text", "textarea", "email", "url"];
   const isStringType = stringTypes.includes(inputProps.type);
+  const parsedValue = isStringType ? String(value || "") : value;
 
   return (
     <Input
       readOnly={readonly}
       disabled={disabled}
       autoFocus={autofocus}
-      value={!value && isStringType ? "" : isStringType ? String(value) : value}
+      value={parsedValue}
       label={!!label && label}
       {...inputProps}
       onChange={_onChange}
