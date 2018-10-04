@@ -30,14 +30,15 @@ function BaseInput(props) {
     return props.onChange(value);
   };
 
-  const nullStrings = ["text", "textarea", "email", "url"];
+  const stringTypes = ["text", "textarea", "email", "url"];
+  const isStringType = stringTypes.includes(inputProps.type);
 
   return (
     <Input
       readOnly={readonly}
       disabled={disabled}
       autoFocus={autofocus}
-      value={!value && nullStrings.includes(inputProps.type) ? "" : value}
+      value={!value && isStringType ? "" : isStringType ? String(value) : value}
       label={!!label && label}
       {...inputProps}
       onChange={_onChange}
